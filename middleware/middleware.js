@@ -33,6 +33,7 @@ function restricted(req, res, next) {
 
 function checkRole(role) {
   return (req, res, next) => {
+    console.log(role)
     if (req.user) {
       if(req.user.access && req.user.access.includes(role)) {
         next()
