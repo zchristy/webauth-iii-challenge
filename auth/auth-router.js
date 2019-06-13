@@ -14,6 +14,7 @@ router.post('/register', (req, res) => {
   if(user.rolePassword === process.env[`${user.role.toUpperCase()}`]){
     const hashRolePass = bcrypt.hashSync(user.rolePassword, 10); // 2 ^ n
     user.rolePassword = hashRolePass;
+    
     if(process.env[`${user.role.toUpperCase()}`] === 'student') {
       user.access = 'student'
     } else if (process.env[`${user.role.toUpperCase()}`] === 'instructor') {
