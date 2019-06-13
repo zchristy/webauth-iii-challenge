@@ -1,6 +1,8 @@
 const jwt = require('jsonwebtoken')
+const bcrypt = require('bcryptjs');
 
 const secrets = require('../config/secrets.js')
+const Users = require('../users/users-model.js');
 
 module.exports = {
   restricted,
@@ -17,7 +19,10 @@ function restricted(req, res, next) {
         res.status(401).json({ message: 'Invalid Credentials' });
       } else {
         // valid token
-        req.user = { id: decodeToken.sub, role: decodeToken.role}
+        req.user = {
+          id: decodeToken.subject,
+          access: decodeToken.access
+        }
         next()
       }
     })
@@ -29,7 +34,7 @@ function restricted(req, res, next) {
 function checkRole(role) {
   return (req, res, next) => {
     if (req.user) {
-      if(req.user.role && req.user.role.includes(role)) {
+      if(req.user.access && req.user.access.includes(role)) {
         next()
       } else {
         res.status(403).json({message: 'You dont have the right role'})

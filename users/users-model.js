@@ -5,6 +5,7 @@ module.exports = {
   find,
   findBy,
   findById,
+  findByRole
 };
 
 function find() {
@@ -13,6 +14,10 @@ function find() {
 
 function findBy(filter) {
   return db('users').where(filter);
+}
+
+function findByRole(role) {
+  return db('users').where('role', 'like', `%${role}%`);
 }
 
 async function add(user) {

@@ -11,6 +11,21 @@ router.post('/register', (req, res) => {
   const hash = bcrypt.hashSync(user.password, 10); // 2 ^ n
   user.password = hash;
 
+  if(user.rolePassword === process.env[`${user.role.toUpperCase()}`]){
+    const hashRolePass = bcrypt.hashSync(user.rolePassword, 10); // 2 ^ n
+    user.rolePassword = hashRolePass;
+    if(process.env[`${user.role.toUpperCase()}`] === 'student') {
+      user.access = 'student'
+    } else if (process.env[`${user.role.toUpperCase()}`] === 'instructor') {
+      user.access = 'instructor'
+    } else if (process.env[`${user.role.toUpperCase()}`] === 'ta') {
+      user.access = 'ta'
+    }
+  } else {
+    user.access = 'N/A'
+  }
+
+
   Users.add(user)
     .then(saved => {
       res.status(201).json(saved);
@@ -45,8 +60,7 @@ router.post('/login', (req, res) => {
 function generateToken(user) {
   const payload = {
     subject: user.id, // standard claim = sub
-    username: user.username,
-    role: user.role,
+    access: user.access
   }
 
   const options = {
